@@ -8,8 +8,7 @@ namespace LawInOrder.Timesheet.Web
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
-            filters.Add(new LocalAuthorizationFilter());
-
+            //filters.Add(new LocalAuthorizationFilter());
         }
     }
 }

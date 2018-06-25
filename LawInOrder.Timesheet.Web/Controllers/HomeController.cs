@@ -1,11 +1,14 @@
-﻿using LawInOrder.Timesheet.Web.DAL;
+﻿using LawInOrder.Timesheet.Web.Attributes;
+using LawInOrder.Timesheet.Web.DAL;
 using LawInOrder.Timesheet.Web.Models;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 
 namespace LawInOrder.Timesheet.Web.Controllers
 {
+    //[LocalAuthorizationFilter]
     public class HomeController : Controller
     {
         private TimesheetContext db = new TimesheetContext();
@@ -14,23 +17,40 @@ namespace LawInOrder.Timesheet.Web.Controllers
         /// Default view for the application displaying a report of time entered for self and subordinates
         /// </summary>
         /// <returns></returns>
-        [Authorize]
+        //[LocalAuthorizationFilter]
         public ActionResult Index()
         {
-            var times = db.Times.Where(t => t.UserId == 1)
+            List<Time> times = new List<Time>();
+
+            // Set the User object
+            object userId = HttpContext.Cache["LoggedInUserId"];
+            if (userId != null)
+            {
+                times = db.Times.Where(t => t.UserId == (int)userId)
                                 .Include(t => t.User)
-                                .OrderBy(t => t.Date);
-            return View(times.ToList());
+                                .OrderBy(t => t.Date)
+                                .ToList();
+            }
+
+             return View(times);
         }
 
         /// <summary>
         /// Set up the page to allow the user to add a new timesheet entry
         /// </summary>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         public ActionResult AddTime()
         {
-            Time time = new Time() { UserId = 1 };
+            Time time = new Time();
+
+            // Set the User object
+            object userId = HttpContext.Cache["LoggedInUserId"];
+            if (userId != null)
+            {
+                time.UserId = (int)userId;
+            }
+
             return View(time);
         }
 
@@ -39,7 +59,7 @@ namespace LawInOrder.Timesheet.Web.Controllers
         /// </summary>
         /// <param name="time">Time object to save to the database</param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [HttpPost]
         //[ValidateAntiForgeryToken]
         public ActionResult AddTime(Time time)
@@ -79,7 +99,7 @@ namespace LawInOrder.Timesheet.Web.Controllers
                 user = db.Users.Single(u => u.Login == user.Login && u.Password == user.Password);
                 if (user != null)
                 {
-                    Session["LoggedInUserId"] = user.Id;
+                    HttpContext.Cache["LoggedInUserId"] = user.Id;
                     return RedirectToAction("Index");
                 }
             }
