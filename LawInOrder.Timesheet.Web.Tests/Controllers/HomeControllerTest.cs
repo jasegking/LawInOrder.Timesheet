@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Mvc;
+﻿using LawInOrder.Timesheet.Web.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using LawInOrder.Timesheet.Web;
-using LawInOrder.Timesheet.Web.Controllers;
+using System.Web.Mvc;
 
 namespace LawInOrder.Timesheet.Web.Tests.Controllers
 {
@@ -26,26 +21,26 @@ namespace LawInOrder.Timesheet.Web.Tests.Controllers
         }
 
         [TestMethod]
-        public void About()
+        public void Login()
         {
             // Arrange
             HomeController controller = new HomeController();
 
             // Act
-            ViewResult result = controller.About() as ViewResult;
+            ViewResult result = controller.Login() as ViewResult;
 
             // Assert
             Assert.AreEqual("Your application description page.", result.ViewBag.Message);
         }
 
         [TestMethod]
-        public void Contact()
+        public void AddTime()
         {
             // Arrange
             HomeController controller = new HomeController();
 
             // Act
-            ViewResult result = controller.Contact() as ViewResult;
+            ViewResult result = controller.AddTime() as ViewResult;
 
             // Assert
             Assert.IsNotNull(result);
