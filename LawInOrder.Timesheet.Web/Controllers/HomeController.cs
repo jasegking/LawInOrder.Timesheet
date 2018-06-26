@@ -26,13 +26,30 @@ namespace LawInOrder.Timesheet.Web.Controllers
             object userId = HttpContext.Cache["LoggedInUserId"];
             if (userId != null)
             {
-                times = db.Times.Where(t => t.UserId == (int)userId)
-                                .Include(t => t.User)
-                                .OrderBy(t => t.Date)
-                                .ToList();
+                times = GetTimes((int)userId);
             }
 
-             return View(times);
+             return View(times.OrderBy(t => t.User.DisplayName).ThenBy(t => t.Date));
+        }
+
+        /// <summary>
+        /// Recursive function to get timesheet for self and all subordinates
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private List<Time> GetTimes(int userId)
+        {
+            List<Time> times = new List<Time>();
+
+            // Get the current users timesheet
+            times.AddRange(db.Times.Where(t => t.UserId == (int)userId).Include(t => t.User));
+
+            // Get all subordinates timesheets
+            db.Users.Where(u => u.ManagerId == userId)
+                    .ToList()
+                    .ForEach(u => times.AddRange(GetTimes(u.Id)));
+
+            return times;
         }
 
         /// <summary>

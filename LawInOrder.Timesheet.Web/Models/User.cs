@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace LawInOrder.Timesheet.Web.Models
 {
@@ -13,6 +14,7 @@ namespace LawInOrder.Timesheet.Web.Models
         public string Login { get; set; }
 
         [DisplayName("Password")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [DisplayName("Email address")]
