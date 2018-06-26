@@ -11,7 +11,7 @@ namespace LawInOrder.Timesheet.Web.Controllers
     //[LocalAuthorizationFilter]
     public class HomeController : Controller
     {
-        private TimesheetContext db = new TimesheetContext();
+        private TimesheetRepository repository = new TimesheetRepository();
 
         /// <summary>
         /// Default view for the application displaying a report of time entered for self and subordinates
@@ -42,12 +42,12 @@ namespace LawInOrder.Timesheet.Web.Controllers
             List<Time> times = new List<Time>();
 
             // Get the current users timesheet
-            times.AddRange(db.Times.Where(t => t.UserId == (int)userId).Include(t => t.User));
+            times.AddRange(repository.GetTimesForUser(userId));
 
             // Get all subordinates timesheets
-            db.Users.Where(u => u.ManagerId == userId)
-                    .ToList()
-                    .ForEach(u => times.AddRange(GetTimes(u.Id)));
+            repository.GetSubordinatesForUser(userId)
+                      .ToList()
+                      .ForEach(u => times.AddRange(GetTimes(u.Id)));
 
             return times;
         }
@@ -83,8 +83,7 @@ namespace LawInOrder.Timesheet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Times.Add(time);
-                db.SaveChanges();
+                repository.AddTime(time);
                 return RedirectToAction("Index");
             }
 
@@ -113,7 +112,7 @@ namespace LawInOrder.Timesheet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                user = db.Users.Single(u => u.Login == user.Login && u.Password == user.Password);
+                user = repository.GetUser(user.Login, user.Password);
                 if (user != null)
                 {
                     HttpContext.Cache["LoggedInUserId"] = user.Id;
