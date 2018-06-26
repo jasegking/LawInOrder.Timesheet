@@ -158,7 +158,8 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DAL\TimesheetContext.cs" />
     <Compile Include="DAL\TimesheetInitializer.cs" />
-    <Compile Include="DAL\TimesheetRepository.cs" />
+    <Compile Include="Managers\EmailManager.cs" />
+    <Compile Include="Managers\TimesheetRepository.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

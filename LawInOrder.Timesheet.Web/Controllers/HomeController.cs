@@ -1,5 +1,5 @@
 ﻿using LawInOrder.Timesheet.Web.Attributes;
-using LawInOrder.Timesheet.Web.DAL;
+using LawInOrder.Timesheet.Web.Managers;
 using LawInOrder.Timesheet.Web.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +59,13 @@ namespace LawInOrder.Timesheet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Save time to DB
                 repository.AddTime(time);
+
+                // Send email notification
+                // TODO: set this up as an asynchronous process that we don't need to wait for
+                var user = repository.GetUser(time.UserId);
+                EmailManager.Send(user.Manager.Email, time);
                 return RedirectToAction("Index");
             }
 

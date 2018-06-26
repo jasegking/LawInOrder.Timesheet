@@ -1,4 +1,5 @@
 ﻿using LawInOrder.Timesheet.Web.DAL;
+using LawInOrder.Timesheet.Web.Managers;
 using LawInOrder.Timesheet.Web.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

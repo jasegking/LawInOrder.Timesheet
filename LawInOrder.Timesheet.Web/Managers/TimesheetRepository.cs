@@ -1,9 +1,10 @@
-﻿using LawInOrder.Timesheet.Web.Models;
+﻿using LawInOrder.Timesheet.Web.DAL;
+using LawInOrder.Timesheet.Web.Models;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 
-namespace LawInOrder.Timesheet.Web.DAL
+namespace LawInOrder.Timesheet.Web.Managers
 {
     public class TimesheetRepository
     {
@@ -37,6 +38,16 @@ namespace LawInOrder.Timesheet.Web.DAL
         {
             db.Times.Add(time);
             db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Return the user associated with the userId
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public User GetUser(int userId)
+        {
+            return db.Users.Include(u => u.Manager).Single(u => u.Id == userId);
         }
 
         /// <summary>
