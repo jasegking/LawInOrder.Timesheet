@@ -2,13 +2,12 @@
 using LawInOrder.Timesheet.Web.DAL;
 using LawInOrder.Timesheet.Web.Models;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 
 namespace LawInOrder.Timesheet.Web.Controllers
 {
-    //[LocalAuthorizationFilter]
+    [LocalAuthorizationFilter]
     public class HomeController : Controller
     {
         private TimesheetRepository repository = new TimesheetRepository();
@@ -17,7 +16,6 @@ namespace LawInOrder.Timesheet.Web.Controllers
         /// Default view for the application displaying a report of time entered for self and subordinates
         /// </summary>
         /// <returns></returns>
-        //[LocalAuthorizationFilter]
         public ActionResult Index()
         {
             List<Time> times = new List<Time>();
@@ -33,30 +31,9 @@ namespace LawInOrder.Timesheet.Web.Controllers
         }
 
         /// <summary>
-        /// Recursive function to get timesheet for self and all subordinates
-        /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        private List<Time> GetTimes(int userId)
-        {
-            List<Time> times = new List<Time>();
-
-            // Get the current users timesheet
-            times.AddRange(repository.GetTimesForUser(userId));
-
-            // Get all subordinates timesheets
-            repository.GetSubordinatesForUser(userId)
-                      .ToList()
-                      .ForEach(u => times.AddRange(GetTimes(u.Id)));
-
-            return times;
-        }
-
-        /// <summary>
         /// Set up the page to allow the user to add a new timesheet entry
         /// </summary>
         /// <returns></returns>
-        //[Authorize]
         public ActionResult AddTime()
         {
             Time time = new Time();
@@ -76,7 +53,6 @@ namespace LawInOrder.Timesheet.Web.Controllers
         /// </summary>
         /// <param name="time">Time object to save to the database</param>
         /// <returns></returns>
-        //[Authorize]
         [HttpPost]
         //[ValidateAntiForgeryToken]
         public ActionResult AddTime(Time time)
@@ -122,5 +98,29 @@ namespace LawInOrder.Timesheet.Web.Controllers
 
             return View();
         }
+
+        #region Private methods
+
+        /// <summary>
+        /// Recursive function to get timesheet for self and all subordinates
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        private List<Time> GetTimes(int userId)
+        {
+            List<Time> times = new List<Time>();
+
+            // Get the current users timesheet
+            times.AddRange(repository.GetTimesForUser(userId));
+
+            // Get all subordinates timesheets
+            repository.GetSubordinatesForUser(userId)
+                      .ToList()
+                      .ForEach(u => times.AddRange(GetTimes(u.Id)));
+
+            return times;
+        }
+
+        #endregion
     }
 }
